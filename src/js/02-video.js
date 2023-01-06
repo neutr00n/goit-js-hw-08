@@ -9,7 +9,7 @@ const iframePlayer = new Player(iframeRef);
 
 iframePlayer.on('timeupdate', throttle(handleCurrentTimeValue, 1000));
 
-iframePlayer.setCurrentTime(localStorage.getItem(PLAYER_CURRENT_TIME));
+iframePlayer.setCurrentTime(localStorage.getItem(PLAYER_CURRENT_TIME) || 0);
 
 function handleCurrentTimeValue({ seconds }) {
   localStorage.setItem(PLAYER_CURRENT_TIME, seconds);

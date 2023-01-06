@@ -1,60 +1,44 @@
 import throttle from 'lodash.throttle';
 
-const refs = {
-  form: document.querySelector('.feedback-form'),
-  email: document.querySelector('input[type=email]'),
-  message: document.querySelector('textarea[name=message]'),
-};
+const formRef = document.querySelector('.feedback-form');
 
-const storageData = {};
-
+let formData = {};
 const FORM_CURRENT_VALUE = 'feedback-form-state';
 
-refs.form.addEventListener('submit', handleFormSubmit);
-refs.form.addEventListener('input', throttle(handleFormInputValue, 500));
+formRef.addEventListener('submit', handleFormSubmit);
+formRef.addEventListener('input', throttle(handleFormInputValue, 500));
 
-getStorageData();
+getFormDataFromStorage();
 
 function handleFormSubmit(evt) {
   evt.preventDefault();
 
-  const formElements = evt.currentTarget.elements;
-  const email = formElements.email.value.trim();
-  const message = formElements.message.value.trim();
-
-  const formData = {
-    email,
-    message,
-  };
-
   evt.currentTarget.reset();
   localStorage.removeItem(FORM_CURRENT_VALUE);
+
   console.log(formData);
 }
 
 function handleFormInputValue(evt) {
-  storageData[evt.target.name] = evt.target.value;
+  formData[evt.target.name] = evt.target.value;
 
-  const stringifyStorageData = JSON.stringify(storageData);
+  const stringifyFormData = JSON.stringify(formData);
 
-  localStorage.setItem(FORM_CURRENT_VALUE, stringifyStorageData);
+  localStorage.setItem(FORM_CURRENT_VALUE, stringifyFormData);
 }
 
-function getStorageData() {
+function getFormDataFromStorage() {
   const savedMessage = localStorage.getItem(FORM_CURRENT_VALUE);
-  try {
-    const parsedSavedMessage = JSON.parse(savedMessage);
 
-    if (parsedSavedMessage) {
-      if (parsedSavedMessage.email) {
-        refs.email.value = parsedSavedMessage.email;
-      }
+  if (savedMessage) {
+    try {
+      formData = JSON.parse(savedMessage);
 
-      if (parsedSavedMessage.message) {
-        refs.message.value = parsedSavedMessage.message;
-      }
+      Object.entries(formData).forEach(
+        ([name, value]) => (formRef.elements[name].value = value)
+      );
+    } catch (err) {
+      console.log(err.message);
     }
-  } catch (err) {
-    console.log(err.message);
   }
 }
