@@ -13,14 +13,23 @@ getFormDataFromStorage();
 function handleFormSubmit(evt) {
   evt.preventDefault();
 
+  const formLength = evt.currentTarget.elements.length - 1;
+
+  if (Object.keys(formData).length !== formLength) {
+    alert('Fill all fields');
+    return;
+  }
+
   evt.currentTarget.reset();
+
   localStorage.removeItem(FORM_CURRENT_VALUE);
 
   console.log(formData);
+  formData = {};
 }
 
 function handleFormInputValue(evt) {
-  formData[evt.target.name] = evt.target.value;
+  formData[evt.target.name] = evt.target.value.trim();
 
   const stringifyFormData = JSON.stringify(formData);
 
